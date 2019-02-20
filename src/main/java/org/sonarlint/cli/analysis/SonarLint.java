@@ -41,7 +41,7 @@ public abstract class SonarLint {
     // do nothing by default
   }
 
-  public void runAnalysis(Map<String, String> properties, ReportFactory reportFactory, InputFileFinder finder, Path projectHome) {
+  public void runAnalysis(Map<String, String> properties, ReportFactory reportFactory, InputFileFinder finder, Path projectHome, String severityLevel) {
     List<ClientInputFile> inputFiles;
     try {
       inputFiles = finder.collect(projectHome);
@@ -56,12 +56,12 @@ public abstract class SonarLint {
       LOGGER.debug(String.format("Submitting %d files for analysis", inputFiles.size()));
     }
 
-    doAnalysis(properties, reportFactory, inputFiles, projectHome);
+    doAnalysis(properties, reportFactory, inputFiles, projectHome, severityLevel);
   }
 
   protected abstract RuleDetails getRuleDetails(String ruleKey);
 
-  protected abstract void doAnalysis(Map<String, String> properties, ReportFactory reportFactory, List<ClientInputFile> inputFiles, Path baseDirPath);
+  protected abstract void doAnalysis(Map<String, String> properties, ReportFactory reportFactory, List<ClientInputFile> inputFiles, Path baseDirPath, String severityLevel);
 
   public abstract void stop();
 

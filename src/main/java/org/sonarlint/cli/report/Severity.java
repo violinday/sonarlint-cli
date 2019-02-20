@@ -22,7 +22,7 @@ package org.sonarlint.cli.report;
 import java.util.HashMap;
 import java.util.Map;
 
-enum Severity {
+public enum Severity {
   INFO,
   MINOR,
   MAJOR,

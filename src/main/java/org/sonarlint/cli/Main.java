@@ -92,9 +92,9 @@ public class Main {
       Map<String, String> props = Util.toMap(opts.properties());
 
       if (opts.isInteractive()) {
-        runInteractive(stats, sonarLint, props, projectHome);
+        runInteractive(stats, sonarLint, props, projectHome, opts.severityLevel());
       } else {
-        runOnce(stats, sonarLint, props, projectHome);
+        runOnce(stats, sonarLint, props, projectHome, opts.severityLevel());
       }
     } catch (Exception e) {
       displayExecutionResult(stats, "FAILURE");
@@ -113,17 +113,17 @@ public class Main {
     return Paths.get(projectHome);
   }
 
-  private void runOnce(Stats stats, SonarLint sonarLint, Map<String, String> props, Path projectHome) throws IOException {
+  private void runOnce(Stats stats, SonarLint sonarLint, Map<String, String> props, Path projectHome, String severityLevel) throws IOException {
     stats.start();
-    sonarLint.runAnalysis(props, reportFactory, fileFinder, projectHome);
+    sonarLint.runAnalysis(props, reportFactory, fileFinder, projectHome, severityLevel);
     sonarLint.stop();
     displayExecutionResult(stats, "SUCCESS");
   }
 
-  private void runInteractive(Stats stats, SonarLint sonarLint, Map<String, String> props, Path projectHome) throws IOException {
+  private void runInteractive(Stats stats, SonarLint sonarLint, Map<String, String> props, Path projectHome, String severityLevel) throws IOException {
     do {
       stats.start();
-      sonarLint.runAnalysis(props, reportFactory, fileFinder, projectHome);
+      sonarLint.runAnalysis(props, reportFactory, fileFinder, projectHome, severityLevel);
       displayExecutionResult(stats, "SUCCESS");
     } while (waitForUser());
 

@@ -20,12 +20,10 @@
 package org.sonarlint.cli.analysis;
 
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.sonarlint.cli.report.ReportFactory;
+import org.sonarlint.cli.report.Severity;
 import org.sonarsource.sonarlint.core.client.api.common.RuleDetails;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
@@ -42,7 +40,7 @@ public class StandaloneSonarLint extends SonarLint {
   }
 
   @Override
-  protected void doAnalysis(Map<String, String> properties, ReportFactory reportFactory, List<ClientInputFile> inputFiles, Path baseDirPath) {
+  protected void doAnalysis(Map<String, String> properties, ReportFactory reportFactory, List<ClientInputFile> inputFiles, Path baseDirPath, String severityLevel) {
     Date start = new Date();
 
     IssueCollector collector = new IssueCollector();
@@ -50,6 +48,14 @@ public class StandaloneSonarLint extends SonarLint {
       inputFiles, properties);
     AnalysisResults result = engine.analyze(config, collector);
     Collection<Trackable> trackables = collector.get().stream().map(IssueTrackable::new).collect(Collectors.toList());
+    Iterator<Trackable> it = trackables.iterator();
+
+    Severity severity = Severity.valueOf(severityLevel);
+    while (it.hasNext()) {
+      if (Severity.valueOf(it.next().getSeverity()).ordinal() < severity.ordinal()) {
+        it.remove();
+      }
+    }
     generateReports(trackables, result, reportFactory, baseDirPath.getFileName().toString(), baseDirPath, start);
   }
 

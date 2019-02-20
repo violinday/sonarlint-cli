@@ -21,6 +21,8 @@ package org.sonarlint.cli;
 
 import java.text.ParseException;
 import java.util.Properties;
+
+import org.sonarlint.cli.report.Severity;
 import org.sonarlint.cli.util.Logger;
 
 public class Options {
@@ -38,6 +40,7 @@ public class Options {
   private String charset = null;
   private boolean update = false;
   private String task;
+  private String severityLevel = Severity.MAJOR.name();
 
   public static Options parse(String[] args) throws ParseException {
     Options options = new Options();
@@ -96,6 +99,9 @@ public class Options {
           checkAdditionalArg(i, args.length, arg);
           appendPropertyTo(args[i], options.props);
 
+        } else if ("-L".equals(arg) || "--level".equals(arg)) {
+          checkAdditionalArg(i, args.length, arg);
+          options.severityLevel = args[i];
         } else {
           throw new ParseException("Unrecognized option: " + arg, i);
         }
@@ -163,6 +169,9 @@ public class Options {
     return task;
   }
 
+  public String severityLevel() {
+    return severityLevel;
+  }
   public static void printUsage() {
     LOGGER.info("");
     LOGGER.info("usage: sonarlint [options]");
@@ -180,6 +189,7 @@ public class Options {
     LOGGER.info(" --tests <glob pattern>   GLOB pattern to identify test files");
     LOGGER.info(" --exclude <glob pattern> GLOB pattern to exclude files");
     LOGGER.info(" --charset <name>         Character encoding of the source files");
+    LOGGER.info(" -L --level <name>        Issue severity level will detect. Levels: INFO,MINOR,MAJOR,CRITICAL,BLOCKER");
   }
 
   private static void appendPropertyTo(String arg, Properties props) {
