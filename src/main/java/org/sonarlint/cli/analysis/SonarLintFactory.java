@@ -69,40 +69,10 @@ public class SonarLintFactory {
   }
 
   public SonarLint createSonarLint(Path globalConfigPath, Path projectConfigPath, boolean mustBeConnected, boolean verbose) {
-    if (!Files.exists(projectConfigPath)) {
-      if (mustBeConnected) {
-        throw new IllegalStateException("Can't update project - no binding defined in: " + projectConfigPath.toAbsolutePath());
-      }
-      return createStandalone(verbose);
+    if (mustBeConnected) {
+      throw new IllegalStateException("Can't update project - no binding defined in: " + projectConfigPath.toAbsolutePath());
     }
-
-    ProjectConfiguration project = configurationReader.readProject(projectConfigPath);
-
-    if (!Files.exists(globalConfigPath)) {
-      throw new IllegalStateException("Found project binding but there is no SonarQube server configured in: " + globalConfigPath.toAbsolutePath());
-    }
-
-    GlobalConfiguration global = configurationReader.readGlobal(globalConfigPath);
-    List<SonarQubeServer> servers = getServers(global);
-
-    String projectKey = project.projectKey();
-    SonarQubeServer server;
-
-    if (project.serverId() == null) {
-      if (servers.size() > 1) {
-        throw new IllegalStateException(
-          String.format("No SonarQube server id is defined in the project binding (%s) and there are multiple servers defined in the global configuration",
-            projectConfigPath.toAbsolutePath()));
-      }
-      server = servers.get(0);
-    } else {
-      Optional<SonarQubeServer> optionalServer = servers.stream().filter(s -> s.id().equals(project.serverId())).findFirst();
-      server = optionalServer
-        .orElseThrow(() -> new IllegalStateException(String.format("No SonarQube server configuration found in '%s' for the server id defined in the project binding: '%s'",
-          globalConfigPath.toAbsolutePath(), project.serverId())));
-    }
-
-    return createConnected(server, projectKey, verbose);
+    return createStandalone(verbose);
   }
 
   private static List<SonarQubeServer> getServers(GlobalConfiguration conf) {
@@ -112,16 +82,6 @@ public class SonarLintFactory {
     }
 
     return servers;
-  }
-
-  private static SonarLint createConnected(SonarQubeServer server, String projectKey, boolean verbose) {
-    LOGGER.info(String.format("Connected mode (%s)", projectKey));
-    ConnectedGlobalConfiguration config = ConnectedGlobalConfiguration.builder()
-      .setLogOutput(new DefaultLogOutput(LOGGER, verbose))
-      .setServerId(server.id())
-      .build();
-    ConnectedSonarLintEngineImpl engine = new ConnectedSonarLintEngineImpl(config);
-    return new ConnectedSonarLint(engine, server, projectKey);
   }
 
   private static SonarLint createStandalone(boolean verbose) {

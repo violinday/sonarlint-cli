@@ -101,68 +101,68 @@ public class SonarLintFactoryTest {
     assertThat(sonarLint).isNotNull();
     assertThat(sonarLint).isInstanceOf(StandaloneSonarLint.class);
   }
+//
+//  @Test
+//  public void failIfUpdateAndStandalone() {
+//    mockConfigs(null, null);
+//    exception.expect(IllegalStateException.class);
+//    exception.expectMessage("Can't update project - no binding defined");
+//    sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, true, true);
+//  }
 
-  @Test
-  public void failIfUpdateAndStandalone() {
-    mockConfigs(null, null);
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("Can't update project - no binding defined");
-    sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, true, true);
-  }
+//  @Test
+//  public void testCreateConnected() {
+//    GlobalConfiguration global = createGlobalConfig("localhost");
+//    ProjectConfiguration project = createProjectConfig("localhost", "project1");
+//    mockConfigs(global, project);
+//    SonarLint sonarLint = sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
+//
+//    assertThat(sonarLint).isNotNull();
+//    assertThat(sonarLint).isInstanceOf(ConnectedSonarLint.class);
+//  }
 
-  @Test
-  public void testCreateConnected() {
-    GlobalConfiguration global = createGlobalConfig("localhost");
-    ProjectConfiguration project = createProjectConfig("localhost", "project1");
-    mockConfigs(global, project);
-    SonarLint sonarLint = sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
-
-    assertThat(sonarLint).isNotNull();
-    assertThat(sonarLint).isInstanceOf(ConnectedSonarLint.class);
-  }
-
-  @Test
-  public void testCreateConnectedWithoutExplicitServer() {
-    GlobalConfiguration global = createGlobalConfig("localhost");
-    ProjectConfiguration project = createProjectConfig(null, "project1");
-    mockConfigs(global, project);
-    SonarLint sonarLint = sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
-
-    assertThat(sonarLint).isNotNull();
-    assertThat(sonarLint).isInstanceOf(ConnectedSonarLint.class);
-  }
-
-  @Test
-  public void failIfServerNotFound() {
-    GlobalConfiguration global = createGlobalConfig("localhost");
-    ProjectConfiguration project = createProjectConfig("localhost2", "project1");
-    mockConfigs(global, project);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("No SonarQube server configuration found");
-    sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
-  }
-
-  @Test
-  public void failIfSeveralServerOptions() {
-    GlobalConfiguration global = createGlobalConfig("localhost", "localhost2");
-    ProjectConfiguration project = createProjectConfig(null, "project1");
-    mockConfigs(global, project);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("there are multiple servers defined in the global configuration");
-    sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
-  }
-
-  @Test
-  public void failIfNoGlobalConfig() {
-    ProjectConfiguration project = createProjectConfig("localhost2", "project1");
-    mockConfigs(null, project);
-
-    exception.expect(IllegalStateException.class);
-    exception.expectMessage("there is no SonarQube server configured in");
-    sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
-  }
+//  @Test
+//  public void testCreateConnectedWithoutExplicitServer() {
+//    GlobalConfiguration global = createGlobalConfig("localhost");
+//    ProjectConfiguration project = createProjectConfig(null, "project1");
+//    mockConfigs(global, project);
+//    SonarLint sonarLint = sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
+//
+//    assertThat(sonarLint).isNotNull();
+//    assertThat(sonarLint).isInstanceOf(ConnectedSonarLint.class);
+//  }
+//
+//  @Test
+//  public void failIfServerNotFound() {
+//    GlobalConfiguration global = createGlobalConfig("localhost");
+//    ProjectConfiguration project = createProjectConfig("localhost2", "project1");
+//    mockConfigs(global, project);
+//
+//    exception.expect(IllegalStateException.class);
+//    exception.expectMessage("No SonarQube server configuration found");
+//    sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
+//  }
+//
+//  @Test
+//  public void failIfSeveralServerOptions() {
+//    GlobalConfiguration global = createGlobalConfig("localhost", "localhost2");
+//    ProjectConfiguration project = createProjectConfig(null, "project1");
+//    mockConfigs(global, project);
+//
+//    exception.expect(IllegalStateException.class);
+//    exception.expectMessage("there are multiple servers defined in the global configuration");
+//    sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
+//  }
+//
+//  @Test
+//  public void failIfNoGlobalConfig() {
+//    ProjectConfiguration project = createProjectConfig("localhost2", "project1");
+//    mockConfigs(null, project);
+//
+//    exception.expect(IllegalStateException.class);
+//    exception.expectMessage("there is no SonarQube server configured in");
+//    sonarLintFactory.createSonarLint(globalConfigPath, projectConfigPath, false, true);
+//  }
 
   public void failIfMultipleServers() {
     GlobalConfiguration global = createGlobalConfig("localhost", "localhost2");
