@@ -41,7 +41,7 @@ public enum Severity {
     }
   }
 
-  static Severity create(String severity) {
+  public static Severity create(String severity) {
     Severity s = MAP.get(severity);
     if (s == null) {
       throw new IllegalArgumentException("Invalid severity: " + severity);

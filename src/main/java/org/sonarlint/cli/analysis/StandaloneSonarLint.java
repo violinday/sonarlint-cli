@@ -22,6 +22,8 @@ package org.sonarlint.cli.analysis;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
 import org.sonarlint.cli.report.ReportFactory;
 import org.sonarlint.cli.report.Severity;
 import org.sonarsource.sonarlint.core.client.api.common.RuleDetails;
@@ -47,13 +49,13 @@ public class StandaloneSonarLint extends SonarLint {
     StandaloneAnalysisConfiguration config = new StandaloneAnalysisConfiguration(baseDirPath, baseDirPath.resolve(".sonarlint"),
       inputFiles, properties);
     AnalysisResults result = engine.analyze(config, collector, null, null);
-    Collection<Trackable> trackables = collector.get().stream().map(IssueTrackable::new).collect(Collectors.toList());
+    List<Trackable> trackables = collector.get().stream().map(IssueTrackable::new).collect(Collectors.toList());
 
-    Iterator<Trackable> it = trackables.iterator();
-    Severity severity = Severity.valueOf(severityLevel);
-    while (it.hasNext()) {
-      if (Severity.valueOf(it.next().getSeverity()).ordinal() < severity.ordinal()) {
-        it.remove();
+    Severity severity = Severity.create(severityLevel);
+    for (int index = trackables.size() -1; index>=0 ; index--) {
+      Trackable trackable = trackables.get(index);
+      if (trackable != null && !StringUtils.isEmpty(trackable.getSeverity()) && Severity.create(trackable.getSeverity()).ordinal() < severity.ordinal()) {
+        trackables.remove(trackable);
       }
     }
     generateReports(trackables, result, reportFactory, baseDirPath.getFileName().toString(), baseDirPath, start);

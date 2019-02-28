@@ -102,9 +102,12 @@ public class StandaloneSonarLintTest {
   @Test
   public void run() throws IOException {
     InputFileFinder fileFinder = mock(InputFileFinder.class);
-//    Path inputFile = new File("/Users/violinday/work/lianjia/mobile_android/alliance_plugin/m_common/src/main/java/com/lianjia/alliance/common/view/BannerView.java").toPath();
-    Path inputFile = new File("/Users/violinday/work/lianjia/mobile_android/alliance_plugin/m_tenant/src/main/java/com/lianjia/alliance/tenant/activity/CustomerDemandDetailActivity.kt").toPath();
-    when(fileFinder.collect(any(Path.class))).thenReturn(Collections.singletonList(createInputFile(inputFile, false)));
+    Path inputFile = new File("/Users/violinday/work/lianjia/mobile_android/alliance_plugin/m_common/src/main/java/com/lianjia/alliance/common/view/BannerView.java").toPath();
+    Path inputFile1 = new File("/Users/violinday/work/lianjia/mobile_android/alliance_plugin/m_tenant/src/main/java/com/lianjia/alliance/tenant/activity/CustomerDemandDetailActivity.kt").toPath();
+    List<ClientInputFile> files = new ArrayList<>();
+    files.add(createInputFile(inputFile, false));
+    files.add(createInputFile(inputFile1, false));
+    when(fileFinder.collect(any(Path.class))).thenReturn(files);
     Path projectHome = new File("/Users/violinday/work/lianjia/mobile_android/alliance_plugin").toPath();
     sonarLint.runAnalysis(new HashMap<>(), new ReportFactory(StandardCharsets.UTF_8), fileFinder, projectHome,"MAJOR");
 
