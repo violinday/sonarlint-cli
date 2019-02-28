@@ -21,13 +21,9 @@ package org.sonarlint.cli.analysis;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import io.gitlab.arturbosch.detekt.cli.Main;
 import org.sonarlint.cli.report.ReportFactory;
 import org.sonarlint.cli.report.Severity;
-import org.sonarlint.cli.util.Logger;
 import org.sonarsource.sonarlint.core.client.api.common.RuleDetails;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
@@ -46,31 +42,21 @@ public class StandaloneSonarLint extends SonarLint {
   @Override
   protected void doAnalysis(Map<String, String> properties, ReportFactory reportFactory, List<ClientInputFile> inputFiles, Path baseDirPath, String severityLevel) {
     Date start = new Date();
-    Collection<Trackable> allTrackables = new ArrayList<>();
 
     IssueCollector collector = new IssueCollector();
     StandaloneAnalysisConfiguration config = new StandaloneAnalysisConfiguration(baseDirPath, baseDirPath.resolve(".sonarlint"),
       inputFiles, properties);
-    AnalysisResults result = engine.analyze(config, collector, new DefaultLogOutput(Logger.get(), true), null);
-    Collection<Trackable> pluginTrackables = collector.get().stream().map(IssueTrackable::new).collect(Collectors.toList());
-    allTrackables.addAll(pluginTrackables);
+    AnalysisResults result = engine.analyze(config, collector, null, null);
+    Collection<Trackable> trackables = collector.get().stream().map(IssueTrackable::new).collect(Collectors.toList());
 
-//    String files = inputFiles.stream().map(clientInputFile -> clientInputFile.getPath()).collect(Collectors.joining(";"));
-//    String argStr =
-//            "--config /Users/violinday/work/lianjia/mobile_android/alliance_plugin/.git/hooks/codeanalysis/detekt/default-detekt-config.yml" +
-//            " --report html:./.detekt/detektReport.html" +
-//            " --input " + files;
-//    ArrayList<IssueTrackable> detektTracbles = DetektUtil.getDetektTrackables(argStr.split(" "));
-//    allTrackables.addAll(detektTracbles);
-
-    Iterator<Trackable> it = allTrackables.iterator();
+    Iterator<Trackable> it = trackables.iterator();
     Severity severity = Severity.valueOf(severityLevel);
     while (it.hasNext()) {
       if (Severity.valueOf(it.next().getSeverity()).ordinal() < severity.ordinal()) {
         it.remove();
       }
     }
-    generateReports(allTrackables, result, reportFactory, baseDirPath.getFileName().toString(), baseDirPath, start);
+    generateReports(trackables, result, reportFactory, baseDirPath.getFileName().toString(), baseDirPath, start);
   }
 
   @Override
